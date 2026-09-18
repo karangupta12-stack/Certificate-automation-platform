@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MailForge | Certificate Automation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #101828;
+            --muted: #667085;
+            --line: #e4e7ec;
+            --panel: #ffffff;
+            --soft: #f7f9fb;
+            --mint: #12b886;
+            --mint-dark: #087f5b;
+            --amber: #f59f00;
+            --coral: #f06543;
+            --indigo: #4f46e5;
+            --shadow: 0 24px 70px rgba(16, 24, 40, 0.12);
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            color: var(--ink);
+            background: #fbfcfd;
+            letter-spacing: 0;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, .brand { font-family: 'Outfit', sans-serif; letter-spacing: 0; }
+        a { color: inherit; text-decoration: none; }
+        .container { width: min(1140px, calc(100% - 40px)); margin: 0 auto; }
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.75s ease, transform 0.75s ease;
+        }
+        .reveal.in-view {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .site-nav {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: rgba(255, 255, 255, 0.9);
+            border-bottom: 1px solid rgba(228, 231, 236, 0.86);
+            backdrop-filter: blur(18px);
+        }
+        .nav-inner {
+            min-height: 74px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+        .brand-wrap { display: flex; align-items: center; gap: 12px; }
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            background: linear-gradient(135deg, var(--mint), var(--indigo));
+            box-shadow: 0 12px 30px rgba(18, 184, 134, 0.25);
+            animation: brandPulse 3.6s ease-in-out infinite;
+        }
+        .brand { font-size: 21px; font-weight: 800; }
+        .nav-links { display: flex; align-items: center; gap: 22px; color: #475467; font-size: 14px; font-weight: 600; }
+        .nav-links a:hover { color: var(--ink); }
+        .nav-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 42px;
+            padding: 0 16px;
+            border-radius: 8px;
+            background: var(--ink);
+            color: #fff;
+            box-shadow: 0 12px 26px rgba(16, 24, 40, 0.16);
+        }
+
+        .hero {
+            position: relative;
+            padding: 72px 0 58px;
+            background:
+                radial-gradient(circle at 14% 10%, rgba(18, 184, 134, 0.12), transparent 28%),
+                radial-gradient(circle at 86% 22%, rgba(245, 159, 0, 0.15), transparent 26%),
+                linear-gradient(180deg, #ffffff 0%, #f5f8fb 100%);
+        }
+        .hero-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(420px, 0.92fr);
+            gap: 52px;
+            align-items: center;
+        }
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border: 1px solid #d0f4e7;
+            border-radius: 999px;
+            background: #effcf7;
+            color: var(--mint-dark);
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            animation: heroEnter 0.65s ease both;
+        }
+        .hero h1 {
+            font-size: clamp(42px, 6vw, 74px);
+            line-height: 0.96;
+            margin: 0 0 22px;
+            max-width: 760px;
+            animation: heroEnter 0.75s 0.08s ease both;
+        }
+        .hero-sub {
+            font-size: clamp(18px, 2vw, 23px);
+            line-height: 1.55;
+            color: #475467;
+            margin: 0 0 30px;
+            max-width: 660px;
+            animation: heroEnter 0.75s 0.16s ease both;
+        }
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            align-items: center;
+            animation: heroEnter 0.75s 0.24s ease both;
+        }
+        .btn {
+            position: relative;
+            overflow: hidden;
+            min-height: 52px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 0 20px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            font-weight: 800;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+        .btn::after {
+            content: "";
+            position: absolute;
+            top: -35%;
+            bottom: -35%;
+            width: 34px;
+            left: -52px;
+            background: rgba(255, 255, 255, 0.42);
+            transform: rotate(22deg);
+            transition: left 0.65s ease;
+        }
+        .btn:hover::after { left: calc(100% + 52px); }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary { background: var(--mint); color: #fff; box-shadow: 0 16px 34px rgba(18, 184, 134, 0.28); }
+        .btn-primary:hover { background: var(--mint-dark); }
+        .btn-secondary { background: #fff; color: var(--ink); border-color: var(--line); box-shadow: 0 12px 28px rgba(16, 24, 40, 0.08); }
+
+        .dashboard-preview {
+            position: relative;
+            border: 1px solid rgba(16, 24, 40, 0.1);
+            border-radius: 18px;
+            background: #111827;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transform: rotate(1deg);
+            animation: dashboardFloat 6.5s ease-in-out infinite, heroEnter 0.8s 0.16s ease both;
+        }
+        .dashboard-preview::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            pointer-events: none;
+            background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.28) 42%, transparent 56%);
+            transform: translateX(-120%);
+            animation: previewSweep 5.2s ease-in-out infinite;
+        }
+        .window-bar {
+            height: 44px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 16px;
+            background: #0b1220;
+        }
+        .dot { width: 10px; height: 10px; border-radius: 50%; background: #ff6b6b; }
+        .dot:nth-child(2) { background: #ffd43b; }
+        .dot:nth-child(3) { background: #51cf66; }
+        .mock-app {
+            display: grid;
+            grid-template-columns: 132px 1fr;
+            min-height: 430px;
+            background: #f8fafc;
+        }
+        .mock-side { background: #101828; padding: 20px 14px; color: #cbd5e1; }
+        .mock-logo { height: 28px; border-radius: 8px; background: #1f2937; margin-bottom: 28px; }
+        .mock-line { height: 12px; border-radius: 6px; background: #2d3748; margin: 15px 0; }
+        .mock-main { padding: 22px; }
+        .mock-top { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+        .mock-title { width: 42%; height: 24px; border-radius: 8px; background: #d9e2ec; }
+        .mock-button { width: 112px; height: 34px; border-radius: 8px; background: var(--mint); }
+        .mock-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+        .mock-card {
+            min-height: 82px;
+            border-radius: 12px;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            padding: 14px;
+            animation: cardLift 4s ease-in-out infinite;
+        }
+        .mock-card:nth-child(2) { animation-delay: 0.25s; }
+        .mock-card:nth-child(3) { animation-delay: 0.5s; }
+        .mock-card strong { display: block; font-size: 28px; margin-bottom: 7px; }
+        .mock-upload {
+            border: 1px dashed #9ca3af;
+            background: #fff;
+            border-radius: 14px;
+            min-height: 108px;
+            display: grid;
+            place-items: center;
+            color: #475467;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        .mock-table { background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 14px; }
+        .table-row {
+            height: 14px;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #edf2f7, #dbeafe, #edf2f7);
+            background-size: 220% 100%;
+            margin: 12px 0;
+            animation: shimmer 2.4s linear infinite;
+        }
+
+        section { padding: 76px 0; }
+        .section-head { max-width: 760px; margin-bottom: 34px; }
+        .section-kicker { color: var(--mint-dark); font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+        h2 { font-size: clamp(30px, 4vw, 48px); line-height: 1.05; margin: 0 0 14px; }
+        .section-copy { color: var(--muted); font-size: 17px; line-height: 1.7; margin: 0; }
+
+        .problem-grid, .steps-grid, .features-grid, .users-grid, .pricing-grid, .faq-grid {
+            display: grid;
+            gap: 18px;
+        }
+        .problem-grid { grid-template-columns: 1fr 1fr; align-items: stretch; }
+        .panel, .feature-card, .step-card, .price-card, .faq-item {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            box-shadow: 0 12px 34px rgba(16, 24, 40, 0.06);
+        }
+        .panel { padding: 28px; }
+        .pain-list, .win-list { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 14px; }
+        .pain-list li, .win-list li { display: flex; gap: 11px; align-items: flex-start; color: #475467; font-weight: 600; }
+        .bad { color: var(--coral); }
+        .good { color: var(--mint); }
+
+        .steps-grid { grid-template-columns: repeat(3, 1fr); }
+        .step-card { padding: 26px; position: relative; overflow: hidden; transition: transform 0.25s ease, box-shadow 0.25s ease; }
+        .step-card::after {
+            content: "";
+            position: absolute;
+            inset: auto 22px 0;
+            height: 3px;
+            border-radius: 999px 999px 0 0;
+            background: linear-gradient(90deg, var(--mint), var(--indigo));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 18px 42px rgba(16, 24, 40, 0.1);
+        }
+        .step-card:hover::after { transform: scaleX(1); }
+        .step-number {
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            background: #ecfdf5;
+            color: var(--mint-dark);
+            font-weight: 900;
+            margin-bottom: 18px;
+        }
+        .step-card h3, .feature-card h3 { margin: 0 0 10px; font-size: 22px; }
+        .step-card p, .feature-card p, .price-card p, .faq-item p { color: var(--muted); line-height: 1.6; margin: 0; }
+        .done-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .done-strip span {
+            background: #ecfdf5;
+            border: 1px solid #c3fae8;
+            color: var(--mint-dark);
+            border-radius: 999px;
+            padding: 9px 13px;
+            font-weight: 800;
+            font-size: 13px;
+            animation: chipPulse 3.5s ease-in-out infinite;
+        }
+        .done-strip span:nth-child(2) { animation-delay: 0.35s; }
+        .done-strip span:nth-child(3) { animation-delay: 0.7s; }
+
+        .features-grid { grid-template-columns: repeat(3, 1fr); }
+        .feature-card { padding: 22px; transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease; }
+        .feature-card:hover { transform: translateY(-6px); border-color: #99e9d0; box-shadow: 0 18px 44px rgba(18, 184, 134, 0.12); }
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            margin-bottom: 14px;
+            color: #fff;
+            background: var(--indigo);
+            transition: transform 0.25s ease, background 0.25s ease;
+        }
+        .feature-card:hover .feature-icon {
+            transform: rotate(-4deg) scale(1.08);
+            background: var(--mint);
+        }
+
+        .demo-band {
+            background: #101828;
+            color: #fff;
+        }
+        .demo-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 38px; align-items: center; }
+        .demo-band .section-copy { color: #cbd5e1; }
+        .video-box {
+            min-height: 390px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 8px;
+            background:
+                linear-gradient(135deg, rgba(18, 184, 134, 0.26), rgba(79, 70, 229, 0.22)),
+                #0b1220;
+            position: relative;
+            overflow: hidden;
+            padding: 18px;
+        }
+        .demo-player {
+            height: 100%;
+            min-height: 354px;
+            border-radius: 8px;
+            background: #f8fafc;
+            color: var(--ink);
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+        }
+        .demo-toolbar {
+            height: 42px;
+            background: #111827;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 14px;
+            color: #cbd5e1;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .demo-toolbar span:nth-child(-n+3) {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #ff6b6b;
+        }
+        .demo-toolbar span:nth-child(2) { background: #ffd43b; }
+        .demo-toolbar span:nth-child(3) { background: #51cf66; }
+        .demo-toolbar strong { margin-left: 8px; }
+        .demo-stage {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            min-height: 312px;
+        }
+        .demo-sidebar {
+            background: #101828;
+            color: #94a3b8;
+            padding: 18px 12px;
+        }
+        .demo-menu-line {
+            height: 12px;
+            border-radius: 7px;
+            background: #27364b;
+            margin-bottom: 16px;
+        }
+        .demo-menu-line.active { background: var(--mint); }
+        .demo-screen {
+            padding: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+        .demo-screen-title {
+            height: 22px;
+            width: 44%;
+            border-radius: 8px;
+            background: #d7dee8;
+            margin-bottom: 18px;
+        }
+        .demo-upload-card, .demo-cert-card, .demo-mail-card, .demo-analytics-card {
+            position: absolute;
+            inset: 58px 18px 18px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+            padding: 18px;
+            opacity: 0;
+            transform: translateX(28px);
+            animation: demoSlide 12s infinite;
+        }
+        .demo-cert-card { animation-delay: 3s; }
+        .demo-mail-card { animation-delay: 6s; }
+        .demo-analytics-card { animation-delay: 9s; }
+        .demo-upload-zone {
+            border: 1px dashed #9ca3af;
+            background: #f8fafc;
+            border-radius: 8px;
+            min-height: 104px;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            color: #475467;
+            font-weight: 800;
+        }
+        .demo-progress {
+            height: 9px;
+            border-radius: 999px;
+            background: #e5e7eb;
+            overflow: hidden;
+            margin-top: 18px;
+        }
+        .demo-progress span {
+            display: block;
+            height: 100%;
+            width: 100%;
+            border-radius: inherit;
+            background: var(--mint);
+            transform-origin: left;
+            animation: fillBar 3s infinite ease-in-out;
+        }
+        .certificate-preview {
+            min-height: 154px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #fff7ed, #ecfeff);
+            border: 7px solid #f8d477;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            color: #344054;
+            font-family: 'Outfit', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+        }
+        .mail-list { display: grid; gap: 10px; margin-top: 12px; }
+        .mail-row {
+            display: grid;
+            grid-template-columns: 28px 1fr 64px;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 10px;
+            border-radius: 8px;
+            background: #f8fafc;
+            font-size: 12px;
+            font-weight: 800;
+            color: #475467;
+        }
+        .mail-row i { color: var(--mint); }
+        .status-sent {
+            color: var(--mint-dark);
+            background: #dcfce7;
+            border-radius: 999px;
+            padding: 4px 8px;
+            text-align: center;
+        }
+        .analytics-bars {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            align-items: end;
+            min-height: 154px;
+            padding-top: 16px;
+        }
+        .analytics-bars span {
+            border-radius: 8px 8px 0 0;
+            background: linear-gradient(180deg, var(--mint), var(--indigo));
+            min-height: 46px;
+            animation: growBar 1.8s infinite alternate ease-in-out;
+        }
+        .analytics-bars span:nth-child(2) { min-height: 92px; animation-delay: 0.15s; }
+        .analytics-bars span:nth-child(3) { min-height: 132px; animation-delay: 0.3s; }
+        .analytics-bars span:nth-child(4) { min-height: 72px; animation-delay: 0.45s; }
+        .play-btn {
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            width: 48px;
+            height: 48px;
+            border: 0;
+            border-radius: 50%;
+            background: #fff;
+            color: var(--ink);
+            font-size: 20px;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            box-shadow: 0 12px 26px rgba(0, 0, 0, 0.22);
+            z-index: 3;
+            animation: playPulse 2.2s ease-in-out infinite;
+        }
+        .demo-caption {
+            position: absolute;
+            left: 18px;
+            right: 18px;
+            bottom: 18px;
+            border-radius: 8px;
+            background: rgba(16, 24, 40, 0.88);
+            padding: 14px 16px;
+            color: #e5e7eb;
+            backdrop-filter: blur(12px);
+            font-weight: 700;
+            z-index: 3;
+        }
+        @keyframes demoSlide {
+            0% { opacity: 0; transform: translateX(28px); }
+            8%, 22% { opacity: 1; transform: translateX(0); }
+            30%, 100% { opacity: 0; transform: translateX(-28px); }
+        }
+        @keyframes fillBar {
+            0% { transform: scaleX(0.08); }
+            72%, 100% { transform: scaleX(1); }
+        }
+        @keyframes growBar {
+            from { transform: scaleY(0.78); }
+            to { transform: scaleY(1); }
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 12px 34px rgba(16, 24, 40, 0.06);
+        }
+        .comparison-table th, .comparison-table td {
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+            font-weight: 700;
+        }
+        .comparison-table th { background: #f3f6f8; color: #344054; font-size: 13px; text-transform: uppercase; }
+        .comparison-table tr:last-child td { border-bottom: 0; }
+
+        .users-grid { grid-template-columns: repeat(6, 1fr); }
+        .user-pill {
+            min-height: 112px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+            display: grid;
+            place-items: center;
+            text-align: center;
+            gap: 8px;
+            padding: 16px;
+            font-weight: 800;
+            box-shadow: 0 10px 26px rgba(16, 24, 40, 0.05);
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .user-pill:hover {
+            transform: translateY(-5px);
+            border-color: #99e9d0;
+            box-shadow: 0 16px 36px rgba(16, 24, 40, 0.1);
+        }
+        .user-pill i { font-size: 28px; color: var(--mint-dark); transition: transform 0.25s ease; }
+        .user-pill:hover i { transform: scale(1.15); }
+
+        .pricing-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .price-card { padding: 30px; transition: transform 0.25s ease, box-shadow 0.25s ease; }
+        .price-card:hover { transform: translateY(-5px); box-shadow: 0 22px 55px rgba(16, 24, 40, 0.1); }
+        .price-card.highlight { border-color: #99e9d0; box-shadow: 0 22px 55px rgba(18, 184, 134, 0.14); animation: proGlow 4s ease-in-out infinite; }
+        .price { font-family: 'Outfit', sans-serif; font-size: 44px; font-weight: 800; margin: 18px 0; }
+        .price-card ul { padding: 0; margin: 20px 0 28px; list-style: none; display: grid; gap: 12px; color: #475467; font-weight: 600; }
+        .price-card li { display: flex; gap: 10px; }
+
+        .testimonial-note {
+            border: 1px dashed #ced4da;
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .faq-grid { grid-template-columns: repeat(2, 1fr); }
+        .faq-item { padding: 22px; }
+        .faq-item h3 { font-size: 18px; margin: 0 0 10px; }
+
+        .final-cta {
+            position: relative;
+            overflow: hidden;
+            padding: 84px 0;
+            background:
+                linear-gradient(135deg, rgba(18, 184, 134, 0.95), rgba(16, 24, 40, 0.94)),
+                #101828;
+            color: #fff;
+            text-align: center;
+        }
+        .final-cta::before {
+            content: "";
+            position: absolute;
+            inset: -50% auto -50% -20%;
+            width: 42%;
+            background: rgba(255, 255, 255, 0.12);
+            transform: rotate(18deg);
+            animation: ctaSweep 6s ease-in-out infinite;
+        }
+        .final-cta .container { position: relative; z-index: 1; }
+        .final-cta p { color: #d9fff3; max-width: 640px; margin: 0 auto 28px; font-size: 18px; line-height: 1.7; }
+
+        @keyframes heroEnter {
+            from { opacity: 0; transform: translateY(18px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes dashboardFloat {
+            0%, 100% { transform: rotate(1deg) translateY(0); }
+            50% { transform: rotate(1deg) translateY(-10px); }
+        }
+        @keyframes previewSweep {
+            0%, 45% { transform: translateX(-120%); }
+            72%, 100% { transform: translateX(120%); }
+        }
+        @keyframes shimmer {
+            from { background-position: 220% 0; }
+            to { background-position: -220% 0; }
+        }
+        @keyframes cardLift {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+        @keyframes chipPulse {
+            0%, 100% { box-shadow: 0 0 0 rgba(18, 184, 134, 0); }
+            50% { box-shadow: 0 0 0 5px rgba(18, 184, 134, 0.1); }
+        }
+        @keyframes playPulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 12px 26px rgba(0, 0, 0, 0.22); }
+            50% { transform: scale(1.06); box-shadow: 0 18px 36px rgba(18, 184, 134, 0.22); }
+        }
+        @keyframes proGlow {
+            0%, 100% { box-shadow: 0 22px 55px rgba(18, 184, 134, 0.14); }
+            50% { box-shadow: 0 26px 66px rgba(18, 184, 134, 0.24); }
+        }
+        @keyframes ctaSweep {
+            0%, 42% { transform: translateX(0) rotate(18deg); opacity: 0; }
+            55% { opacity: 1; }
+            100% { transform: translateX(330%) rotate(18deg); opacity: 0; }
+        }
+        @keyframes brandPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @media (max-width: 980px) {
+            .nav-links a:not(.nav-cta) { display: none; }
+            .hero-grid, .problem-grid, .demo-grid, .pricing-grid, .faq-grid { grid-template-columns: 1fr; }
+            .hero-grid { gap: 34px; }
+            .dashboard-preview { transform: none; animation-name: heroEnter; }
+            .features-grid, .steps-grid { grid-template-columns: repeat(2, 1fr); }
+            .users-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 640px) {
+            .container { width: min(100% - 28px, 1140px); }
+            .nav-inner { min-height: 66px; }
+            .brand { font-size: 18px; }
+            .nav-cta { min-height: 38px; padding: 0 12px; font-size: 13px; }
+            .hero { padding-top: 48px; }
+            .hero-actions .btn { width: 100%; }
+            .mock-app { grid-template-columns: 1fr; min-height: 390px; }
+            .mock-side { display: none; }
+            .mock-kpis, .features-grid, .steps-grid, .users-grid { grid-template-columns: 1fr; }
+            .comparison-table th, .comparison-table td { padding: 14px 12px; font-size: 14px; }
+            section { padding: 56px 0; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                scroll-behavior: auto !important;
+                transition-duration: 0.001ms !important;
+            }
+            .reveal { opacity: 1; transform: none; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="site-nav">
+        <div class="container nav-inner">
+            <a class="brand-wrap" href="#top" aria-label="MailForge home">
+                <span class="brand-icon"><i class="bi bi-envelope-paper-fill"></i></span>
+                <span class="brand">MailForge</span>
+            </a>
+            <div class="nav-links">
+                <a href="#how">How it works</a>
+                <a href="#features">Features</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#faq">FAQ</a>
+                {% comment %} <a class="nav-cta" href="{% url 'dashboard' %}">
+                    Start Here <i class="bi bi-arrow-right"></i>
+                </a> {% endcomment %}
+            </div>
+        </div>
+    </nav>
+
+    <main id="top">
+        <section class="hero">
+            <div class="container hero-grid">
+                <div>
+                    <div class="eyebrow"><i class="bi bi-lightning-charge-fill"></i> Built for events, colleges, and communities</div>
+                    <h1>Generate & Send Personalized Certificates in Minutes</h1>
+                    <p class="hero-sub">Upload Excel -> Generate PDFs -> Send Bulk Emails Automatically</p>
+                    <div class="hero-actions">
+                        <a class="btn btn-primary" href="{% url 'dashboard' %}">
+                            Try Now <i class="bi bi-arrow-right"></i>
+                        </a>
+                        <a class="btn btn-secondary" href="#demo">
+                            <i class="bi bi-play-circle-fill"></i> Watch Demo
+                        </a>
+                    </div>
+                </div>
+
+                <div class="dashboard-preview" aria-label="MailForge dashboard preview">
+                    <div class="window-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+                    <div class="mock-app">
+                        <aside class="mock-side">
+                            <div class="mock-logo"></div>
+                            <div class="mock-line"></div>
+                            <div class="mock-line"></div>
+                            <div class="mock-line"></div>
+                            <div class="mock-line" style="width:70%;"></div>
+                        </aside>
+                        <div class="mock-main">
+                            <div class="mock-top">
+                                <div class="mock-title"></div>
+                                <div class="mock-button"></div>
+                            </div>
+                            <div class="mock-kpis">
+                                <div class="mock-card"><strong>250</strong><span>Contacts</span></div>
+                                <div class="mock-card"><strong>248</strong><span>Sent</span></div>
+                                <div class="mock-card"><strong>2</strong><span>Retry</span></div>
+                            </div>
+                            <div class="mock-upload"><i class="bi bi-file-earmark-spreadsheet"></i>&nbsp; Excel uploaded. Certificates ready.</div>
+                            <div class="mock-table">
+                                <div class="table-row" style="width:92%;"></div>
+                                <div class="table-row" style="width:78%;"></div>
+                                <div class="table-row" style="width:86%;"></div>
+                                <div class="table-row" style="width:62%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="container">
+                <div class="section-head">
+                    <div class="section-kicker">Problem</div>
+                    <h2>Still Sending Certificates Manually?</h2>
+                    <p class="section-copy">Every event ends with the same repetitive work: files, names, attachments, and emails. MailForge removes that post-event drag.</p>
+                </div>
+                <div class="problem-grid">
+                    <div class="panel">
+                        <h3>Manual workflow</h3>
+                        <ul class="pain-list">
+                            <li><i class="bi bi-x-circle-fill bad"></i> Rename PDFs one by one</li>
+                            <li><i class="bi bi-x-circle-fill bad"></i> Attach each file manually</li>
+                            <li><i class="bi bi-x-circle-fill bad"></i> Send hundreds of emails manually</li>
+                            <li><i class="bi bi-x-circle-fill bad"></i> Waste hours after every event</li>
+                        </ul>
+                    </div>
+                    <div class="panel">
+                        <h3>MailForge workflow</h3>
+                        <ul class="win-list">
+                            <li><i class="bi bi-check-circle-fill good"></i> MailForge automates everything</li>
+                            <li><i class="bi bi-check-circle-fill good"></i> Personalized PDFs are generated per recipient</li>
+                            <li><i class="bi bi-check-circle-fill good"></i> Emails are sent in bulk from your SMTP</li>
+                            <li><i class="bi bi-check-circle-fill good"></i> Campaign status stays visible on the dashboard</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="how" style="background: var(--soft);">
+            <div class="container">
+                <div class="section-head">
+                    <div class="section-kicker">How it works</div>
+                    <h2>Three steps from spreadsheet to sent certificates</h2>
+                </div>
+                <div class="steps-grid">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h3>Upload Excel Sheet</h3>
+                        <p>Import names, emails, colleges, event names, and custom fields in one clean upload.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h3>Upload Certificate Template</h3>
+                        <p>Place names on your certificate design and preview the output before sending.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h3>Click Send</h3>
+                        <p>Launch the campaign and let MailForge generate PDFs, personalize emails, and dispatch in bulk.</p>
+                    </div>
+                </div>
+                <div class="done-strip">
+                    <span>PDFs generated</span>
+                    <span>Emails personalized</span>
+                    <span>Bulk dispatch completed</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="features">
+            <div class="container">
+                <div class="section-head">
+                    <div class="section-kicker">Features</div>
+                    <h2>Everything needed for certificate campaigns</h2>
+                </div>
+                <div class="features-grid">
+                    <div class="feature-card"><div class="feature-icon"><i class="bi bi-award-fill"></i></div><h3>Auto certificate generation</h3><p>Create personalized PDF certificates from a reusable template.</p></div>
+                    <div class="feature-card"><div class="feature-icon"><i class="bi bi-send-check-fill"></i></div><h3>Bulk personalized emails</h3><p>Send custom emails to hundreds of recipients without repetitive work.</p></div>
+                    <div class="feature-card"><div class="feature-icon"><i class="bi bi-file-earmark-spreadsheet-fill"></i></div><h3>Excel upload support</h3><p>Import participant data using common spreadsheet columns.</p></div>
+                    <div class="feature-card"><div class="feature-icon"><i class="bi bi-braces"></i></div><h3>Custom tags</h3><p>Use @Name, @College, @Event, and similar fields in your email body.</p></div>
+                    <div class="feature-card"><div class="feature-icon"><i class="bi bi-cpu-fill"></i></div><h3>Multi-thread sending</h3><p>Background workers keep campaigns moving while the dashboard stays usable.</p></div>
+                    <div class="feature-card"><div class="feature-icon"><i class="bi bi-hdd-network-fill"></i></div><h3>Self-hosted support</h3><p>Run the system on your own infrastructure and control your data.</p></div>
+                    <div class="feature-card"><div class="feature-icon"><i class="bi bi-envelope-gear-fill"></i></div><h3>SMTP integration</h3><p>Connect Gmail SMTP or another SMTP provider from settings.</p></div>
+                    <div class="feature-card"><div class="feature-icon"><i class="bi bi-arrow-repeat"></i></div><h3>Retry failed emails</h3><p>Track failed deliveries and handle retries from campaign logs.</p></div>
+                    <div class="feature-card"><div class="feature-icon"><i class="bi bi-calendar-event-fill"></i></div><h3>Event-focused workflows</h3><p>Designed for workshops, webinars, hackathons, and training programs.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="demo" class="demo-band">
+            <div class="container demo-grid">
+                <div>
+                    <div class="section-kicker" style="color:#8cecc8;">Demo video</div>
+                    <h2>Show the flow in under two minutes</h2>
+                    <p class="section-copy">Use this section for a 1-2 minute screen recording: upload Excel, preview the certificate, launch the campaign, then show analytics.</p>
+                </div>
+                <div class="video-box">
+                    <button class="play-btn" type="button" aria-label="Replay animated demo" id="demoPlay"><i class="bi bi-arrow-clockwise"></i></button>
+                    <div class="demo-player" id="demoPlayer">
+                        <div class="demo-toolbar">
+                            <span></span><span></span><span></span><strong>MailForge Live Demo</strong>
+                        </div>
+                        <div class="demo-stage">
+                            <div class="demo-sidebar">
+                                <div class="demo-menu-line active"></div>
+                                <div class="demo-menu-line" style="width:84%;"></div>
+                                <div class="demo-menu-line" style="width:68%;"></div>
+                                <div class="demo-menu-line" style="width:78%;"></div>
+                            </div>
+                            <div class="demo-screen">
+                                <div class="demo-screen-title"></div>
+                                <div class="demo-upload-card">
+                                    <div class="demo-upload-zone">
+                                        <div><i class="bi bi-file-earmark-spreadsheet-fill"></i><br>participants.xlsx uploaded</div>
+                                    </div>
+                                    <div class="demo-progress"><span></span></div>
+                                </div>
+                                <div class="demo-cert-card">
+                                    <div class="certificate-preview">
+                                        Certificate<br><span style="color:var(--mint-dark);">Amit Kumar Sharma</span>
+                                    </div>
+                                </div>
+                                <div class="demo-mail-card">
+                                    <h3 style="margin:0 0 10px;">Sending personalized emails</h3>
+                                    <div class="mail-list">
+                                        <div class="mail-row"><i class="bi bi-check-circle-fill"></i><span>riya@college.edu</span><span class="status-sent">Sent</span></div>
+                                        <div class="mail-row"><i class="bi bi-check-circle-fill"></i><span>amit@college.edu</span><span class="status-sent">Sent</span></div>
+                                        <div class="mail-row"><i class="bi bi-check-circle-fill"></i><span>neha@college.edu</span><span class="status-sent">Sent</span></div>
+                                    </div>
+                                </div>
+                                <div class="demo-analytics-card">
+                                    <h3 style="margin:0;">Campaign analytics</h3>
+                                    <div class="analytics-bars"><span></span><span></span><span></span><span></span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="demo-caption" id="demoCaption">Animated demo: Excel upload -> certificate PDF -> bulk send -> analytics.</div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="container">
+                <div class="section-head">
+                    <div class="section-kicker">Comparison</div>
+                    <h2>MailForge vs traditional workflow</h2>
+                </div>
+                <table class="comparison-table">
+                    <thead>
+                        <tr><th>Feature</th><th>MailForge</th><th>Traditional Workflow</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Manual PDF handling</td><td><i class="bi bi-x-circle-fill bad"></i></td><td><i class="bi bi-check-circle-fill good"></i></td></tr>
+                        <tr><td>Personalized certificates</td><td><i class="bi bi-check-circle-fill good"></i></td><td><i class="bi bi-exclamation-triangle-fill" style="color:var(--amber);"></i></td></tr>
+                        <tr><td>Bulk automation</td><td><i class="bi bi-check-circle-fill good"></i></td><td><i class="bi bi-x-circle-fill bad"></i></td></tr>
+                        <tr><td>Time required</td><td>Minutes</td><td>Hours</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section style="background: var(--soft);">
+            <div class="container">
+                <div class="section-head">
+                    <div class="section-kicker">Target users</div>
+                    <h2>Perfect for teams that run events often</h2>
+                </div>
+                <div class="users-grid">
+                    <div class="user-pill"><i class="bi bi-mortarboard-fill"></i>Colleges</div>
+                    <div class="user-pill"><i class="bi bi-code-square"></i>Hackathons</div>
+                    <div class="user-pill"><i class="bi bi-tools"></i>Workshops</div>
+                    <div class="user-pill"><i class="bi bi-camera-video-fill"></i>Webinars</div>
+                    <div class="user-pill"><i class="bi bi-person-workspace"></i>Training Programs</div>
+                    <div class="user-pill"><i class="bi bi-people-fill"></i>Coding Communities</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="pricing">
+            <div class="container">
+                <div class="section-head">
+                    <div class="section-kicker">Pricing</div>
+                    <h2>Simple plans for starting fast</h2>
+                </div>
+                <div class="pricing-grid">
+                    <div class="price-card">
+                        <h3>Free</h3>
+                        <div class="price">Rs. 0</div>
+                        <p>Best for small events and testing your first campaign.</p>
+                        <ul>
+                            <li><i class="bi bi-check-circle-fill good"></i>100 emails</li>
+                            <li><i class="bi bi-check-circle-fill good"></i>Basic features</li>
+                            <li><i class="bi bi-check-circle-fill good"></i>Excel upload</li>
+                        </ul>
+                        <a class="btn btn-secondary" href="{% url 'dashboard' %}">Start Free</a>
+                    </div>
+                    <div class="price-card highlight">
+                        <h3>Pro</h3>
+                        <div class="price">Custom</div>
+                        <p>For recurring events, larger batches, and priority sending.</p>
+                        <ul>
+                            <li><i class="bi bi-check-circle-fill good"></i>Unlimited campaigns</li>
+                            <li><i class="bi bi-check-circle-fill good"></i>Analytics</li>
+                            <li><i class="bi bi-check-circle-fill good"></i>Priority queue</li>
+                        </ul>
+                        <a class="btn btn-primary" href="{% url 'dashboard' %}">Start Here</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="container">
+                <div class="section-head">
+                    <div class="section-kicker">Testimonials</div>
+                    <h2>Real feedback belongs here</h2>
+                </div>
+                <div class="testimonial-note">Add real feedback, screenshots, or college names here when you have permission. No fake testimonials needed.</div>
+            </div>
+        </section>
+
+        <section id="faq" style="background: var(--soft);">
+            <div class="container">
+                <div class="section-head">
+                    <div class="section-kicker">FAQ</div>
+                    <h2>Questions people ask before sending</h2>
+                </div>
+                <div class="faq-grid">
+                    <div class="faq-item"><h3>Does this send emails automatically?</h3><p>Yes. After you select recipients and launch a campaign, sending runs in the background.</p></div>
+                    <div class="faq-item"><h3>Can I use Gmail SMTP?</h3><p>Yes. Configure Gmail SMTP with an app password from the settings page.</p></div>
+                    <div class="faq-item"><h3>Are certificates generated automatically?</h3><p>Yes. MailForge can generate personalized certificate PDFs from your uploaded template.</p></div>
+                    <div class="faq-item"><h3>Is my data stored securely?</h3><p>The app is self-hosted, so your data stays in your own deployment and database.</p></div>
+                    <div class="faq-item"><h3>Can I self-host?</h3><p>Yes. The project is built as a Django application and can run on your own server.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="final-cta">
+            <div class="container">
+                <h2>Stop Sending Certificates Manually</h2>
+                <p>Move from hours of repetitive sending to a campaign flow that feels clean, fast, and trackable.</p>
+                <a class="btn btn-secondary" href="{% url 'dashboard' %}">Start Free <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const revealTargets = document.querySelectorAll(
+            '.section-head, .panel, .step-card, .feature-card, .video-box, .comparison-table, .user-pill, .price-card, .testimonial-note, .faq-item, .final-cta h2, .final-cta p, .final-cta .btn'
+        );
+        revealTargets.forEach((item, index) => {
+            item.classList.add('reveal');
+            item.style.transitionDelay = `${Math.min(index % 6, 5) * 70}ms`;
+        });
+
+        if ('IntersectionObserver' in window) {
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-view');
+                        revealObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.16 });
+            revealTargets.forEach((item) => revealObserver.observe(item));
+        } else {
+            revealTargets.forEach((item) => item.classList.add('in-view'));
+        }
+
+        const demoPlay = document.getElementById('demoPlay');
+        const demoCaption = document.getElementById('demoCaption');
+        const demoPlayer = document.getElementById('demoPlayer');
+        if (demoPlay && demoCaption && demoPlayer) {
+            demoPlay.addEventListener('click', () => {
+                demoPlayer.style.animation = 'none';
+                demoPlayer.offsetHeight;
+                demoPlayer.style.animation = '';
+                demoCaption.textContent = 'Replaying demo: upload, generate, send, track.';
+                demoPlay.innerHTML = '<i class="bi bi-play-fill"></i>';
+                setTimeout(() => {
+                    demoPlay.innerHTML = '<i class="bi bi-arrow-clockwise"></i>';
+                    demoCaption.textContent = 'Animated demo: Excel upload -> certificate PDF -> bulk send -> analytics.';
+                }, 1800);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -156,7 +156,8 @@ http://127.0.0.1:8000/
 
 | Page | URL | Purpose |
 | --- | --- | --- |
-| Dashboard | `/` | Campaign summary and recent activity |
+| Landing | `/` | Public product page and start CTA |
+| Dashboard | `/dashboard/` | Campaign summary and recent activity |
 | Compose | `/compose/` | Create and send email campaigns |
 | Contacts | `/contacts/` | Import, add, edit, and delete recipients |
 | Sent Mails | `/sent-mails/` | Review campaign history |

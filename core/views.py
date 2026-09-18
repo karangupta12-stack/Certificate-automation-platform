@@ -207,6 +207,10 @@ def send_bulk_emails_task(subject, body, recipients, campaign_id, attachments=[]
         traceback.print_exc()
 
 # --- MAIN VIEWS ---
+def landing(request):
+    return render(request, 'landing.html')
+
+
 def dashboard(request):
     total_contacts = Recipient.objects.count()
     campaigns = EmailCampaign.objects.all().order_by('-sent_at')
